@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Cloudflare Pages Deployment Notifier</title>
+  </head>
+  <body>
+    <header>
+      <span class="logo" aria-hidden="true">▲</span>
+      <h1>Pages Notifier</h1>
+    </header>
+
+    <section class="status-card">
+      <div class="row">
+        <span class="label">Monitoring</span>
+        <span id="monitoring" class="value">—</span>
+      </div>
+      <div class="row">
+        <span class="label">Current Status</span>
+        <span id="status" class="value"><span class="dot idle"></span>—</span>
+      </div>
+      <div class="row">
+        <span class="label">Project</span>
+        <span id="project" class="value">—</span>
+      </div>
+      <div class="row">
+        <span class="label">Elapsed Time</span>
+        <span id="elapsed" class="value">—</span>
+      </div>
+    </section>
+
+    <div class="buttons">
+      <button id="toggle" class="primary">Start Monitoring</button>
+      <button id="test">Test Notification</button>
+      <button id="open">Open Cloudflare Pages</button>
+    </div>
+
+    <footer>
+      <button id="options" class="link">Settings</button>
+    </footer>
+
+    <!-- Shared helpers first, then the popup logic. -->
+    <script src="utils/constants.js"></script>
+    <script src="utils/status.js"></script>
+    <script src="utils/storage.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

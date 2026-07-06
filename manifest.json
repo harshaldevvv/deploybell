@@ -1,27 +1,37 @@
 {
   "manifest_version": 3,
-  "name": "Cloudflare Pages Deploy Notifier",
-  "version": "0.1.0",
-  "description": "Desktop notifications for your Cloudflare Pages deployments — know the moment a build starts, succeeds, or fails.",
+  "name": "Cloudflare Pages Deployment Notifier",
+  "version": "0.2.0",
+  "description": "Watches the Cloudflare Pages dashboard and alerts you with a loud sound and desktop notification the moment a deployment finishes.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage", "alarms", "notifications"],
-  "host_permissions": ["https://api.cloudflare.com/*"],
+  "permissions": ["storage", "notifications", "offscreen"],
   "background": {
-    "service_worker": "src/background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://dash.cloudflare.com/*"],
+      "js": [
+        "utils/constants.js",
+        "utils/status.js",
+        "utils/storage.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
   "action": {
-    "default_popup": "src/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Cloudflare Pages Deploy Notifier"
+    "default_title": "Cloudflare Pages Deployment Notifier"
   },
-  "options_page": "src/options.html"
+  "options_page": "options.html"
 }

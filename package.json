@@ -1,11 +1,13 @@
 {
   "name": "cloudflare-pages-deploy-notifier",
-  "version": "0.1.0",
-  "description": "Chrome extension for desktop notifications on Cloudflare Pages deployments.",
+  "version": "0.2.0",
+  "description": "Chrome extension that watches the Cloudflare Pages dashboard and alerts you with a loud sound and desktop notification when a deployment finishes.",
   "type": "module",
   "private": true,
   "scripts": {
     "icons": "node scripts/gen-icons.js",
+    "sounds": "node scripts/gen-sounds.js",
+    "assets": "npm run icons && npm run sounds",
     "zip": "node scripts/pack.js"
   },
   "keywords": [
@@ -14,7 +16,8 @@
     "cloudflare-pages",
     "notifications",
     "deployments",
-    "manifest-v3"
+    "manifest-v3",
+    "mutationobserver"
   ],
   "license": "MIT",
   "engines": {

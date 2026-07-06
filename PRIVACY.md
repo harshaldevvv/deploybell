@@ -2,44 +2,38 @@
 
 _Last updated: 2026-07-06_
 
-**Cloudflare Pages Deploy Notifier** is designed to collect as little as
-possible. In short: your data stays on your device.
+**Cloudflare Pages Deployment Notifier** is built to collect nothing. It has no
+backend, makes no network requests of its own, and uses no API keys.
 
-## What the extension stores
+## What it does
 
-The extension saves the following in your browser's local extension storage
-(`chrome.storage.local`), which never leaves your device except as described
-below:
+The extension runs a content script only on `https://dash.cloudflare.com/*`.
+There it reads the text already visible on the Cloudflare Pages dashboard to
+figure out whether a deployment is building, has succeeded, failed, or was
+cancelled. When a deployment finishes, it shows a desktop notification and
+plays a sound locally.
 
-- Your Cloudflare API token
-- The selected account ID and the project names you chose to monitor
-- Your notification preferences and poll interval
-- The last-seen deployment id/status for each monitored project (used to detect
-  changes)
+## What it stores
 
-## What the extension sends, and where
+Only your own settings and a small amount of runtime state, kept in your
+browser's local extension storage (`chrome.storage.local`):
 
-The extension makes HTTPS requests **only** to `https://api.cloudflare.com` to:
+- Your preferences (poll interval, volume, which alerts and sounds are enabled)
+- The most recent observed deployment status, project name, and timing (used to
+  show the popup and to avoid firing duplicate notifications)
 
-- Verify your API token
-- List your accounts and Pages projects
-- Read deployment status for the projects you selected
+None of this ever leaves your device.
 
-Your API token is sent to Cloudflare in the `Authorization` header of these
-requests, exactly as Cloudflare's API requires. It is not sent anywhere else.
+## What it does NOT do
 
-## What the extension does NOT do
-
-- No analytics, telemetry, or tracking of any kind
-- No third-party servers — there is no backend operated by this project
-- No selling or sharing of data
-- No collection of browsing history or activity on other sites
+- No servers, no analytics, no telemetry, no tracking
+- No API tokens, no Cloudflare API calls, no external network requests
+- Does not read any site other than the Cloudflare dashboard
+- Does not collect browsing history or personal data
 
 ## Removing your data
 
-Uninstalling the extension deletes all locally stored data, including your API
-token. You can also revoke the API token at any time from the
-[Cloudflare dashboard](https://dash.cloudflare.com/profile/api-tokens).
+Uninstalling the extension deletes all locally stored settings and state.
 
 ## Contact
 

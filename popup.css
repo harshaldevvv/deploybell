@@ -1,0 +1,117 @@
+:root {
+  --cf-orange: #f6821f;
+  --bg: #ffffff;
+  --fg: #1d1d1f;
+  --muted: #6e6e73;
+  --border: #e5e5e7;
+  --card: #f7f7f8;
+  --success: #43a047;
+  --failed: #e53935;
+  --running: #f6821f;
+  --queued: #9e9e9e;
+  --watching: #0aa5ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --fg: #f2f2f7;
+    --muted: #98989d;
+    --border: #38383a;
+    --card: #2c2c2e;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  width: 300px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.logo { color: var(--cf-orange); font-size: 16px; }
+header h1 { margin: 0; font-size: 14px; font-weight: 600; }
+
+.status-card {
+  margin: 12px 14px;
+  padding: 4px 12px;
+  background: var(--card);
+  border-radius: 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+}
+.row + .row { border-top: 1px solid var(--border); }
+
+.label { color: var(--muted); }
+.value { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  display: inline-block; flex-shrink: 0;
+}
+.dot.idle { background: var(--queued); }
+.dot.watching { background: var(--watching); }
+.dot.running { background: var(--running); animation: pulse 1.2s ease-in-out infinite; }
+.dot.success { background: var(--success); }
+.dot.failed { background: var(--failed); }
+.dot.cancelled { background: #fb8c00; }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 14px 12px;
+}
+
+button {
+  font: inherit;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+button:hover { border-color: var(--cf-orange); }
+
+button.primary {
+  background: var(--cf-orange);
+  border-color: var(--cf-orange);
+  color: #fff;
+  font-weight: 600;
+}
+button.primary:hover { filter: brightness(1.05); }
+button.primary.stop { background: var(--failed); border-color: var(--failed); }
+
+footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 14px 12px;
+  border-top: 1px solid var(--border);
+}
+.link {
+  border: none;
+  background: transparent;
+  color: var(--cf-orange);
+  padding: 0;
+  cursor: pointer;
+}
+.link:hover { text-decoration: underline; }
