@@ -1,0 +1,23 @@
+{
+  "name": "cloudflare-pages-deploy-notifier",
+  "version": "0.1.0",
+  "description": "Chrome extension for desktop notifications on Cloudflare Pages deployments.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "icons": "node scripts/gen-icons.js",
+    "zip": "node scripts/pack.js"
+  },
+  "keywords": [
+    "chrome-extension",
+    "cloudflare",
+    "cloudflare-pages",
+    "notifications",
+    "deployments",
+    "manifest-v3"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
