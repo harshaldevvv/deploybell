@@ -1,26 +1,31 @@
 {
-  "name": "cloudflare-pages-deploy-notifier",
-  "version": "0.2.0",
-  "description": "Chrome extension that watches the Cloudflare Pages dashboard and alerts you with a loud sound and desktop notification when a deployment finishes.",
-  "type": "module",
-  "private": true,
+  "name": "cloudflare-pages-notifier",
+  "version": "1.0.0",
+  "description": "Background system daemon and CLI that alerts you with loud sounds and native desktop notifications when Cloudflare Pages builds complete.",
+  "main": "index.js",
+  "type": "commonjs",
   "scripts": {
-    "icons": "node scripts/gen-icons.js",
-    "sounds": "node scripts/gen-sounds.js",
-    "assets": "npm run icons && npm run sounds",
-    "zip": "node scripts/pack.js"
+    "start": "node index.js",
+    "configure": "node index.js --config",
+    "test-notify": "node index.js --test",
+    "build": "pkg . --targets node18-win-x64 --output dist/cf-pages-notifier.exe"
   },
-  "keywords": [
-    "chrome-extension",
-    "cloudflare",
-    "cloudflare-pages",
-    "notifications",
-    "deployments",
-    "manifest-v3",
-    "mutationobserver"
-  ],
-  "license": "MIT",
+  "bin": "index.js",
+  "pkg": {
+    "assets": [
+      "sounds/**/*"
+    ]
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "dotenv": "^16.4.5",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "license": "MIT"
 }
