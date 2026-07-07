@@ -4,6 +4,11 @@ const fs = require('fs');
 const os = require('os');
 const { exec } = require('child_process');
 
+// Set Application User Model ID for Windows Toast Notifications
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.cloudflare.pages.notifier');
+}
+
 const CONFIG_PATH = path.join(os.homedir(), '.cf-pages-notifier.json');
 
 // Default global config fallback
@@ -83,7 +88,7 @@ function playSound(soundNameOrPath) {
     soundPath = soundNameOrPath;
   } else {
     const soundFile = `${soundNameOrPath}.wav`;
-    const soundsDir = path.join(__dirname, 'sounds');
+    const soundsDir = path.join(app.getPath('userData'), 'sounds');
     soundPath = path.join(soundsDir, soundFile);
   }
   
@@ -95,10 +100,11 @@ function playSound(soundNameOrPath) {
   // Escape single quotes for PowerShell filepath
   const escapedPath = soundPath.replace(/'/g, "''");
   
-  // Asynchronous playback by spawning PowerShell SoundPlayer
-  const command = `powershell -c "(New-Object System.Media.SoundPlayer('${escapedPath}')).PlaySync()"`;
-  exec(command, (err) => {
+  // Asynchronous playback by spawning PowerShell SoundPlayer (running hidden with no profile to speed up)
+  const command = `powershell -NoProfile -NonInteractive -Command "(New-Object System.Media.SoundPlayer('${escapedPath}')).PlaySync()"`;
+  exec(command, { windowsHide: true }, (err) => {
     if (err) {
+      console.error('Failed to play sound via PowerShell:', err);
       // Fallback audible beep
       process.stdout.write('\x07');
     }
@@ -131,7 +137,7 @@ function notifyDeployment(projectName, status, deployment) {
     const notification = new Notification({
       title: title,
       body: message,
-      icon: path.join(__dirname, 'assets', 'icon.png')
+      icon: path.join(app.getPath('userData'), 'icon.png')
     });
     
     notification.on('click', () => {
@@ -294,7 +300,8 @@ function createMainWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      backgroundThrottling: false
     },
     show: false
   });
@@ -431,16 +438,40 @@ if (!gotTheLock) {
 
   app.whenReady().then(() => {
     loadConfig();
+    
+    // Ensure sounds and icon assets are copied to userData for reliability in packaged builds
+    const userSoundsDir = path.join(app.getPath('userData'), 'sounds');
+    if (!fs.existsSync(userSoundsDir)) {
+      fs.mkdirSync(userSoundsDir, { recursive: true });
+    }
+    
+    const defaultSounds = ['success.wav', 'failure.wav', 'cancelled.wav', 'chime.wav', 'ding.wav', 'alert.wav'];
+    const sourceSoundsDir = path.join(__dirname, 'sounds');
+    for (const sound of defaultSounds) {
+      const destPath = path.join(userSoundsDir, sound);
+      const srcPath = path.join(sourceSoundsDir, sound);
+      if (fs.existsSync(srcPath)) {
+        try {
+          fs.copyFileSync(srcPath, destPath);
+        } catch (err) {
+          console.error(`Failed to copy sound ${sound} to userData:`, err);
+        }
+      }
+    }
+
+    const userIconPath = path.join(app.getPath('userData'), 'icon.png');
+    const sourceIconPath = path.join(__dirname, 'assets', 'icon.png');
+    if (fs.existsSync(sourceIconPath)) {
+      try {
+        fs.copyFileSync(sourceIconPath, userIconPath);
+      } catch (err) {
+        console.error('Failed to copy icon to userData:', err);
+      }
+    }
+
     createTray();
     createMainWindow();
     startPolling();
-
-    // Check if sounds dir exists, copy default ones if needed
-    // The sounds directory should exist in local path
-    const soundsDir = path.join(__dirname, 'sounds');
-    if (!fs.existsSync(soundsDir)) {
-      fs.mkdirSync(soundsDir, { recursive: true });
-    }
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
