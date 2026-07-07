@@ -21,7 +21,7 @@ No need to keep browser tabs open. It runs silently in the background 24/7.
 ### 1. Pre-requisites
 To watch your builds, you need:
 1. A **Cloudflare API Token** with **Pages:Read** permissions.
-   * You can create one in your Cloudflare Profile under **API Tokens** -> **Create Token** -> **Read Pages** template.
+   * You can create one in your Cloudflare Profile under **API Tokens** -> **Create Token** -> scroll down to the bottom and click **Get started** under **Create Custom Token**. Define the permission: `Account` -> `Cloudflare Pages` -> `Read`.
 2. Your **Cloudflare Account ID** (found in your Cloudflare dashboard URL or on the Workers/Pages overview page).
 
 ### 2. Running the Standalone Executable
