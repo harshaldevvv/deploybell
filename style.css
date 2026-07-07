@@ -43,17 +43,16 @@ body {
   width: 100vw;
 }
 
-/* Glass Container Window */
+/* Solid Container Window */
 .window-container {
   height: 100vh;
   width: 100vw;
-  background: var(--bg-glass);
+  background: #121216; /* Solid slate background, no transparency */
   border: 1px solid var(--border-glass);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-glow);
-  backdrop-filter: blur(25px);
   overflow: hidden;
 }
 
@@ -1050,4 +1049,82 @@ input[type="range"]::-webkit-slider-thumb:hover {
   0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
   70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
   100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* CUSTOM SOUND CONFIG STYLES */
+.sound-config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.sound-config-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sound-config-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.sound-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sound-row-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.sound-row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sound-select-wrapper {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.sound-select-wrapper select {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 13px;
+  height: 34px;
+}
+
+.custom-path-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+  animation: fadeIn 0.2s ease;
+}
+
+.custom-path-group input[type="text"] {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.btn-browse {
+  padding: 6px 12px;
+  font-size: 12px;
+  height: 32px;
+  font-family: var(--font-sans);
 }

@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   getState: () => ipcRenderer.invoke('get-state'),
   fetchProjects: (apiToken, accountId) => ipcRenderer.invoke('fetch-projects', apiToken, accountId),
   playSound: (soundName) => ipcRenderer.invoke('play-sound', soundName),
+  selectAudioFile: () => ipcRenderer.invoke('select-audio-file'),
   getStartupStatus: () => ipcRenderer.invoke('get-startup-status'),
   setStartupStatus: (enable) => ipcRenderer.invoke('set-startup-status', enable),
   windowMinimize: () => ipcRenderer.send('window-minimize'),

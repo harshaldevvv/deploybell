@@ -170,19 +170,75 @@
                   </label>
                 </div>
 
-                <div class="sound-test-row mt-15">
-                  <div class="form-group select-sound">
-                    <label for="test-sound-select">Test Sounds</label>
-                    <select id="test-sound-select">
-                      <option value="success">Success Chime</option>
-                      <option value="failure">Failure Alert</option>
-                      <option value="cancelled">Cancelled Warning</option>
-                      <option value="chime">Generic Chime</option>
-                      <option value="ding">Soft Ding</option>
-                      <option value="alert">Digital Alert</option>
-                    </select>
+                <div class="sound-config-list mt-15">
+                  <!-- Success Sound Row -->
+                  <div class="sound-config-row">
+                    <div class="sound-row-header">
+                      <span class="sound-row-title">Build Success Alert</span>
+                    </div>
+                    <div class="sound-row-actions">
+                      <div class="sound-select-wrapper">
+                        <select id="success-sound-select">
+                          <option value="success">Default (Success Chime)</option>
+                          <option value="chime">Generic Chime</option>
+                          <option value="ding">Soft Ding</option>
+                          <option value="alert">Digital Alert</option>
+                          <option value="custom">Custom Audio File...</option>
+                        </select>
+                      </div>
+                      <button type="button" id="btn-test-success-sound" class="btn btn-secondary btn-sm" title="Test Alert">🔊 Test</button>
+                    </div>
+                    <div id="success-custom-path-group" class="custom-path-group hidden">
+                      <input type="text" id="success-custom-path" placeholder="C:\path\to\sound.wav" readonly>
+                      <button type="button" id="btn-browse-success" class="btn btn-secondary btn-browse">Browse...</button>
+                    </div>
                   </div>
-                  <button type="button" id="btn-test-sound" class="btn btn-secondary">🔊 Play Sound</button>
+
+                  <!-- Failure Sound Row -->
+                  <div class="sound-config-row">
+                    <div class="sound-row-header">
+                      <span class="sound-row-title">Build Failure Alert</span>
+                    </div>
+                    <div class="sound-row-actions">
+                      <div class="sound-select-wrapper">
+                        <select id="failure-sound-select">
+                          <option value="failure">Default (Failure Alert)</option>
+                          <option value="alert">Digital Alert</option>
+                          <option value="chime">Generic Chime</option>
+                          <option value="ding">Soft Ding</option>
+                          <option value="custom">Custom Audio File...</option>
+                        </select>
+                      </div>
+                      <button type="button" id="btn-test-failure-sound" class="btn btn-secondary btn-sm" title="Test Alert">🔊 Test</button>
+                    </div>
+                    <div id="failure-custom-path-group" class="custom-path-group hidden">
+                      <input type="text" id="failure-custom-path" placeholder="C:\path\to\sound.wav" readonly>
+                      <button type="button" id="btn-browse-failure" class="btn btn-secondary btn-browse">Browse...</button>
+                    </div>
+                  </div>
+
+                  <!-- Cancelled Sound Row -->
+                  <div class="sound-config-row">
+                    <div class="sound-row-header">
+                      <span class="sound-row-title">Build Cancelled Alert</span>
+                    </div>
+                    <div class="sound-row-actions">
+                      <div class="sound-select-wrapper">
+                        <select id="cancelled-sound-select">
+                          <option value="cancelled">Default (Cancelled Warning)</option>
+                          <option value="chime">Generic Chime</option>
+                          <option value="ding">Soft Ding</option>
+                          <option value="alert">Digital Alert</option>
+                          <option value="custom">Custom Audio File...</option>
+                        </select>
+                      </div>
+                      <button type="button" id="btn-test-cancelled-sound" class="btn btn-secondary btn-sm" title="Test Alert">🔊 Test</button>
+                    </div>
+                    <div id="cancelled-custom-path-group" class="custom-path-group hidden">
+                      <input type="text" id="cancelled-custom-path" placeholder="C:\path\to\sound.wav" readonly>
+                      <button type="button" id="btn-browse-cancelled" class="btn btn-secondary btn-browse">Browse...</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 

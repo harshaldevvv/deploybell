@@ -10,7 +10,7 @@
     "cli:configure": "node index.js --config",
     "cli:test-notify": "node index.js --test",
     "build:cli": "pkg . --targets node18-win-x64 --output dist/cf-pages-notifier-cli.exe",
-    "dist": "electron-builder --win portable"
+    "dist": "electron-builder"
   },
   "bin": "index.js",
   "pkg": {
@@ -48,8 +48,19 @@
       "assets/**/*"
     ],
     "win": {
-      "target": "portable",
+      "target": [
+        "portable",
+        "nsis"
+      ],
       "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Cloudflare Pages Notifier",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
     }
   }
 }

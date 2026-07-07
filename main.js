@@ -15,7 +15,10 @@ let config = {
   soundEnabled: true,
   notifyEnabled: true,
   startMinimized: false,
-  closeToTray: true
+  closeToTray: true,
+  successSound: 'success',
+  failureSound: 'failure',
+  cancelledSound: 'cancelled'
 };
 
 let mainWindow = null;
@@ -74,19 +77,26 @@ function getTrayIconPath() {
   return path.join(__dirname, 'assets', 'icon.png');
 }
 
-function playSound(soundName) {
-  const soundFile = `${soundName}.wav`;
-  // Check if packaged or in development
-  const soundsDir = path.join(__dirname, 'sounds');
-  const soundPath = path.join(soundsDir, soundFile);
+function playSound(soundNameOrPath) {
+  let soundPath;
+  if (soundNameOrPath && (fs.existsSync(soundNameOrPath) || path.isAbsolute(soundNameOrPath))) {
+    soundPath = soundNameOrPath;
+  } else {
+    const soundFile = `${soundNameOrPath}.wav`;
+    const soundsDir = path.join(__dirname, 'sounds');
+    soundPath = path.join(soundsDir, soundFile);
+  }
   
   if (!fs.existsSync(soundPath)) {
     console.error(`Sound file not found: ${soundPath}`);
     return;
   }
   
+  // Escape single quotes for PowerShell filepath
+  const escapedPath = soundPath.replace(/'/g, "''");
+  
   // Asynchronous playback by spawning PowerShell SoundPlayer
-  const command = `powershell -c "(New-Object System.Media.SoundPlayer('${soundPath}')).PlaySync()"`;
+  const command = `powershell -c "(New-Object System.Media.SoundPlayer('${escapedPath}')).PlaySync()"`;
   exec(command, (err) => {
     if (err) {
       // Fallback audible beep
@@ -106,13 +116,13 @@ function notifyDeployment(projectName, status, deployment) {
   
   if (status === 'success' || status === 'succeeded') {
     title = `✅ Pages Build Succeeded!`;
-    soundName = 'success';
+    soundName = config.successSound || 'success';
   } else if (['failure', 'failed', 'error'].includes(status)) {
     title = `❌ Pages Build Failed!`;
-    soundName = 'failure';
+    soundName = config.failureSound || 'failure';
   } else if (['canceled', 'cancelled', 'aborted'].includes(status)) {
     title = `⚠️ Pages Build Cancelled`;
-    soundName = 'cancelled';
+    soundName = config.cancelledSound || 'cancelled';
   } else {
     return;
   }
@@ -279,8 +289,8 @@ function createMainWindow() {
     minWidth: 800,
     minHeight: 600,
     frame: false, // Frameless window for premium design
-    transparent: true, // Transparent for glassmorphic visual style
-    backgroundColor: '#00000000', // Allow transparency
+    transparent: false, // Solid background
+    backgroundColor: '#121216', // Slate dark background
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -482,6 +492,21 @@ ipcMain.handle('fetch-projects', async (event, apiToken, accountId) => {
 ipcMain.handle('play-sound', (event, soundName) => {
   playSound(soundName);
   return true;
+});
+
+ipcMain.handle('select-audio-file', async () => {
+  const { dialog } = require('electron');
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Select Custom WAV Notification Sound',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Audio Files', extensions: ['wav'] }
+    ]
+  });
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0];
+  }
+  return null;
 });
 
 ipcMain.handle('get-startup-status', () => {

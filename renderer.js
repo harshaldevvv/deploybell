@@ -303,6 +303,15 @@ async function saveAllSettings() {
     selectedProjects.push(checkbox.value);
   });
 
+  const successSelect = document.getElementById('success-sound-select').value;
+  const successSound = successSelect === 'custom' ? document.getElementById('success-custom-path').value.trim() : successSelect;
+
+  const failureSelect = document.getElementById('failure-sound-select').value;
+  const failureSound = failureSelect === 'custom' ? document.getElementById('failure-custom-path').value.trim() : failureSelect;
+
+  const cancelledSelect = document.getElementById('cancelled-sound-select').value;
+  const cancelledSound = cancelledSelect === 'custom' ? document.getElementById('cancelled-custom-path').value.trim() : cancelledSelect;
+
   if (!apiToken || !accountId) {
     saveStatus.className = 'save-status-msg error';
     saveStatus.innerText = 'Credentials cannot be empty.';
@@ -312,6 +321,22 @@ async function saveAllSettings() {
   if (selectedProjects.length === 0) {
     saveStatus.className = 'save-status-msg error';
     saveStatus.innerText = 'Select at least one project to watch.';
+    return;
+  }
+
+  if (successSelect === 'custom' && !successSound) {
+    saveStatus.className = 'save-status-msg error';
+    saveStatus.innerText = 'Please select a custom audio path for Success builds.';
+    return;
+  }
+  if (failureSelect === 'custom' && !failureSound) {
+    saveStatus.className = 'save-status-msg error';
+    saveStatus.innerText = 'Please select a custom audio path for Failure builds.';
+    return;
+  }
+  if (cancelledSelect === 'custom' && !cancelledSound) {
+    saveStatus.className = 'save-status-msg error';
+    saveStatus.innerText = 'Please select a custom audio path for Cancelled builds.';
     return;
   }
 
@@ -332,7 +357,10 @@ async function saveAllSettings() {
       soundEnabled,
       notifyEnabled,
       startMinimized,
-      closeToTray
+      closeToTray,
+      successSound,
+      failureSound,
+      cancelledSound
     });
 
     localConfig = updatedConfig;
@@ -407,12 +435,6 @@ async function initApp() {
     renderChecklistElements(searchInput.value);
   });
 
-  // Play Test Sound trigger
-  document.getElementById('btn-test-sound').addEventListener('click', () => {
-    const selectedSound = document.getElementById('test-sound-select').value;
-    window.api.playSound(selectedSound);
-  });
-
   // Verify and Load Projects checklist
   document.getElementById('btn-fetch-projects').addEventListener('click', async () => {
     const fetchSpinner = document.getElementById('fetch-spinner');
@@ -464,8 +486,62 @@ async function initApp() {
     if (localConfig.apiToken && localConfig.accountId) {
       loadProjectsChecklist(localConfig.apiToken, localConfig.accountId);
     }
+
+    // Bind custom sounds config rows
+    setupSoundRow('success', 'success');
+    setupSoundRow('failure', 'failure');
+    setupSoundRow('cancelled', 'cancelled');
+
   } catch (err) {
     console.error('Initialization loading configs failed:', err);
+  }
+
+  // Setup sound row element helper
+  function setupSoundRow(prefix, defaultValue) {
+    const select = document.getElementById(`${prefix}-sound-select`);
+    const pathGroup = document.getElementById(`${prefix}-custom-path-group`);
+    const pathInput = document.getElementById(`${prefix}-custom-path`);
+    const browseBtn = document.getElementById(`btn-browse-${prefix}`);
+    const testBtn = document.getElementById(`btn-test-${prefix}-sound`);
+    
+    // Set initial state
+    const currentVal = localConfig[`${prefix}Sound`] || defaultValue;
+    const isCustom = currentVal && (currentVal.includes('\\') || currentVal.includes('/') || currentVal.includes(':'));
+    
+    if (isCustom) {
+      select.value = 'custom';
+      pathGroup.classList.remove('hidden');
+      pathInput.value = currentVal;
+    } else {
+      select.value = currentVal || defaultValue;
+      pathGroup.classList.add('hidden');
+      pathInput.value = '';
+    }
+    
+    // Toggle input visibility
+    select.addEventListener('change', () => {
+      if (select.value === 'custom') {
+        pathGroup.classList.remove('hidden');
+      } else {
+        pathGroup.classList.add('hidden');
+      }
+    });
+    
+    // Browse native file dialogue
+    browseBtn.addEventListener('click', async () => {
+      const file = await window.api.selectAudioFile();
+      if (file) {
+        pathInput.value = file;
+      }
+    });
+    
+    // Play test trigger
+    testBtn.addEventListener('click', () => {
+      const val = select.value === 'custom' ? pathInput.value.trim() : select.value;
+      if (val) {
+        window.api.playSound(val);
+      }
+    });
   }
 
   // Load active project states and event logs
