@@ -325,6 +325,23 @@ async function runWizard() {
   console.log(chalk.bold.cyan('========================================'));
   console.log(chalk.bold.cyan('  Cloudflare Pages Notifier Setup Wizard '));
   console.log(chalk.bold.cyan('========================================\n'));
+
+  console.log(chalk.bold.yellow('Step 1: How to get your Cloudflare API Token:'));
+  console.log(chalk.white('  1. Go to your Cloudflare Dashboard (https://dash.cloudflare.com)'));
+  console.log(chalk.white('  2. Click on your profile icon in the top right -> "My Profile".'));
+  console.log(chalk.white('  3. Select "API Tokens" from the left menu.'));
+  console.log(chalk.white('  4. Click "Create Token".'));
+  console.log(chalk.white('  5. Find the "Read Cloudflare Pages" template (or click "Create Custom Token"):'));
+  console.log(chalk.gray('     - Permissions: Account -> Cloudflare Pages -> Read'));
+  console.log(chalk.gray('     - Resources: Include -> All accounts'));
+  console.log(chalk.white('  6. Copy and save your generated API Token.'));
+  console.log('');
+  console.log(chalk.bold.yellow('Step 2: How to get your Cloudflare Account ID:'));
+  console.log(chalk.white('  1. Log into your Cloudflare Dashboard.'));
+  console.log(chalk.white('  2. Click "Workers & Pages" in the left sidebar.'));
+  console.log(chalk.white('  3. Look at the right-hand panel under "Account details": your Account ID is listed there.'));
+  console.log(chalk.gray('     (Alternatively, it is the 32-character hex string in your dashboard URL)'));
+  console.log(chalk.cyan('------------------------------------------------------------\n'));
   
   let existing = {};
   if (fs.existsSync(CONFIG_PATH)) {
