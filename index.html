@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare Pages Notifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="window-container">
+    <!-- Custom Frameless Titlebar -->
+    <header class="titlebar">
+      <div class="titlebar-logo">
+        <svg viewBox="0 0 24 24" class="cf-logo-svg">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
+          <path d="M12 9v4M12 15h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Cloudflare Pages Notifier</span>
+      </div>
+      <div class="titlebar-controls">
+        <button id="btn-minimize" title="Minimize">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <button id="btn-close" class="close-btn" title="Close to Tray">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <nav class="nav-menu">
+          <button class="nav-item active" data-target="dashboard">
+            <svg viewBox="0 0 24 24" class="nav-icon"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </button>
+          <button class="nav-item" data-target="settings">
+            <svg viewBox="0 0 24 24" class="nav-icon"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Settings
+          </button>
+          <button class="nav-item" data-target="logs">
+            <svg viewBox="0 0 24 24" class="nav-icon"><line x1="4" y1="9" x2="20" y2="9" stroke="currentColor" stroke-width="2"/><line x1="4" y1="15" x2="20" y2="15" stroke="currentColor" stroke-width="2"/><line x1="10" y1="3" x2="8" y2="21" stroke="currentColor" stroke-width="2"/><line x1="16" y1="3" x2="14" y2="21" stroke="currentColor" stroke-width="2"/></svg>
+            Activity Logs
+          </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <div class="connection-status">
+            <span class="status-indicator online"></span>
+            <span class="status-label">Daemon Active</span>
+          </div>
+          <button id="btn-manual-sync" title="Check deployments now">
+            <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.73-.73"/></svg>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Panel Contents -->
+      <main class="content-panel">
+        
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content active">
+          <!-- Overview Cards -->
+          <div class="dashboard-overview">
+            <div class="stat-card">
+              <span class="stat-title">Total Projects</span>
+              <span id="stat-total-projects" class="stat-value">0</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-title">Active/Building</span>
+              <span id="stat-building-projects" class="stat-value">0</span>
+            </div>
+            <div class="stat-card success-card">
+              <span class="stat-title">Succeeded</span>
+              <span id="stat-success-projects" class="stat-value">0</span>
+            </div>
+            <div class="stat-card failure-card">
+              <span class="stat-title">Failed</span>
+              <span id="stat-failed-projects" class="stat-value">0</span>
+            </div>
+          </div>
+
+          <!-- Project Grid -->
+          <div class="section-header">
+            <h2>Monitored Projects</h2>
+            <div id="last-updated-time" class="time-badge">Syncing...</div>
+          </div>
+          <div id="project-grid" class="project-grid-container">
+            <!-- Dynamic project cards go here -->
+            <div class="empty-state">
+              <div class="empty-icon">📂</div>
+              <h3>No Monitored Projects</h3>
+              <p>Go to Settings to configure your Cloudflare API and select projects.</p>
+              <button class="btn btn-primary" onclick="switchTab('settings')">Configure Settings</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="tab-settings" class="tab-content">
+          <div class="settings-container">
+            <h2>Application Configuration</h2>
+            
+            <form id="settings-form" onsubmit="event.preventDefault();">
+              <!-- Credentials Card -->
+              <div class="settings-card">
+                <h3>1. Cloudflare Credentials</h3>
+                <div class="form-group">
+                  <label for="api-token">
+                    API Token
+                    <span class="tooltip" title="Requires Pages:Read permission. Retrieve from Cloudflare Profile -> API Tokens.">ℹ️</span>
+                  </label>
+                  <div class="input-with-button">
+                    <input type="password" id="api-token" placeholder="Paste your Cloudflare API Token" required>
+                    <button type="button" id="btn-toggle-token" class="btn btn-secondary btn-icon" title="Toggle Visibility">👁️</button>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="account-id">Account ID</label>
+                  <input type="text" id="account-id" placeholder="Paste your 32-character Account ID" required>
+                </div>
+                
+                <button type="button" id="btn-fetch-projects" class="btn btn-secondary">
+                  <span class="spinner-inline hidden" id="fetch-spinner"></span>
+                  Verify Credentials & Fetch Projects
+                </button>
+                <div id="credentials-status" class="status-msg"></div>
+              </div>
+
+              <!-- Projects Checklist -->
+              <div class="settings-card">
+                <h3>2. Monitored Projects</h3>
+                <p class="card-subtitle">Select which Pages projects to query. Credentials verification is required to fetch the list.</p>
+                <div class="project-list-filter">
+                  <input type="text" id="project-search" placeholder="Search projects..." disabled>
+                </div>
+                <div class="project-checklist" id="project-checklist-container">
+                  <div class="checklist-placeholder">Please verify credentials to load projects list.</div>
+                </div>
+              </div>
+
+              <!-- Notification Preferences -->
+              <div class="settings-card">
+                <h3>3. Notifications & Audio Alerts</h3>
+                
+                <div class="toggle-group">
+                  <div class="toggle-info">
+                    <span class="toggle-label">Desktop Notifications</span>
+                    <span class="toggle-desc">Show native Windows toast notifications on build completion</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="notify-enabled" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-group mt-15">
+                  <div class="toggle-info">
+                    <span class="toggle-label">Sound Alerts</span>
+                    <span class="toggle-desc">Play system sound effects when build statuses change</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="sound-enabled" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+                <div class="sound-test-row mt-15">
+                  <div class="form-group select-sound">
+                    <label for="test-sound-select">Test Sounds</label>
+                    <select id="test-sound-select">
+                      <option value="success">Success Chime</option>
+                      <option value="failure">Failure Alert</option>
+                      <option value="cancelled">Cancelled Warning</option>
+                      <option value="chime">Generic Chime</option>
+                      <option value="ding">Soft Ding</option>
+                      <option value="alert">Digital Alert</option>
+                    </select>
+                  </div>
+                  <button type="button" id="btn-test-sound" class="btn btn-secondary">🔊 Play Sound</button>
+                </div>
+              </div>
+
+              <!-- System & Polling Options -->
+              <div class="settings-card">
+                <h3>4. System Preferences</h3>
+                
+                <div class="toggle-group">
+                  <div class="toggle-info">
+                    <span class="toggle-label">Start on Windows Boot</span>
+                    <span class="toggle-desc">Automatically launch this app in the background when logging in</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="startup-enabled">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-group mt-15">
+                  <div class="toggle-info">
+                    <span class="toggle-label">Start Minimized</span>
+                    <span class="toggle-desc">Launch directly into the system tray without opening the dashboard window</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="start-minimized">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-group mt-15">
+                  <div class="toggle-info">
+                    <span class="toggle-label">Close Window to System Tray</span>
+                    <span class="toggle-desc">Clicking "X" hides the app in the toolbar instead of terminating it</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="close-to-tray" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+                <div class="form-group mt-15">
+                  <div class="slider-header">
+                    <label for="poll-interval">Polling Interval (seconds)</label>
+                    <span id="poll-interval-val" class="slider-badge">10s</span>
+                  </div>
+                  <input type="range" id="poll-interval" min="5" max="120" step="5" value="10">
+                  <div class="slider-labels">
+                    <span>5s (Aggressive)</span>
+                    <span>120s (Passive)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Save Actions -->
+              <div class="form-actions">
+                <button type="button" id="btn-save-settings" class="btn btn-primary">Save Settings</button>
+                <div id="save-status" class="save-status-msg"></div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ACTIVITY LOGS TAB -->
+        <section id="tab-logs" class="tab-content">
+          <div class="logs-container">
+            <div class="section-header">
+              <h2>Activity & Daemon Logs</h2>
+              <button id="btn-clear-logs" class="btn btn-secondary btn-sm">Clear Feed</button>
+            </div>
+            <p class="logs-subtitle">Real-time status updates of the background worker thread.</p>
+            <div class="logs-terminal" id="logs-terminal-view">
+              <!-- Logs populated here -->
+              <div class="log-line system">[SYSTEM] Daemon listening and running in background...</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

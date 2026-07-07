@@ -1,124 +1,97 @@
-# Cloudflare Pages Build Notifier (Native Daemon)
+# Cloudflare Pages Build Notifier (Desktop Application)
 
-A lightweight background daemon and CLI dashboard for Windows that monitors your Cloudflare Pages deployments dynamically via the official Cloudflare API. It triggers **loud system audio sounds** and **native Windows desktop toast notifications** the second a build completes.
+A premium, production-ready Windows desktop application and background service that monitors your Cloudflare Pages deployments dynamically via the official Cloudflare API. It triggers **native Windows desktop toast notifications** (which open deployment URLs on click) and **audio sound alerts** the instant a build status changes.
 
-No need to keep browser tabs open. It runs silently in the background 24/7.
+The application features a modern dark-themed dashboard with glassmorphic styling, real-time activity feeds, and a system tray (toolbar) residency mode to run silently in the background 24/7.
 
 ---
 
-## Features
+## Key Features
 
-* 🔊 **Loud Audio Alerts**: Plays custom `.wav` sounds for Success, Failure, and Cancelled builds.
-* 🖥️ **Native Desktop Notifications**: Shows native Windows toast notifications that open the deployment URL when clicked.
-* 📊 **Live Console Dashboard**: A beautiful, real-time command-line dashboard showing active builds, deployment IDs, environment scopes, and recent transition logs.
-* ⚙️ **Interactive Setup Wizard**: Prompts you for your API credentials on first run, fetches all available projects under your account, and lets you select which ones to monitor.
-* 📦 **Standalone Executable (`.exe`)**: Package the app into a single executable so it runs anywhere without needing Node.js or `npm` installed.
+* 🖥️ **Sleek Glassmorphic GUI Dashboard**: Real-time status cards (Success, Failed, Building, Cancelled) showing environment details, short deployment IDs, and relative time tracking.
+* ⚙️ **Comprehensive Settings Panel**:
+  * **Interactive Project Selection**: Fetch all available pages projects from your Cloudflare account automatically and select which ones to watch using checkboxes.
+  * **Volume & Alarm Prefs**: Toggles for sounds/toasts with an interactive sound dropdown selector and "Play Test" triggers.
+  * **System Startup Options**: Toggle starting the app automatically on computer boot.
+  * **Background Residency**: Toggles for starting minimized directly to the tray and hiding the window to the tray when clicking the close (`X`) button.
+  * **Adjustable Polling Cadence**: Slide between 5 seconds (aggressive) and 120 seconds (passive) intervals.
+* 📥 **Native System Tray Residency**: Right-click tray menu to open dashboard, trigger manual checks, toggle notification mutes, set startup status, and exit. Double-clicking the tray icon toggles the main window visibility.
+* 🔔 **Interactive Notifications**: Desktop toast alerts showing project, environment, and build IDs. Clicking the notification opens the deployment page in your default browser.
+* 📦 **Zero-Dependency Portable EXE**: Package the app into a single standalone portable `.exe` executable that runs without requiring Node.js or installer wizard setups.
+* 📟 **Legacy CLI Mode**: Keep CLI dashboard monitoring capabilities using `--cli` scripts.
 
 ---
 
 ## Getting Started
 
-### 1. Pre-requisites
+### 1. Requirements
 To watch your builds, you need:
 1. A **Cloudflare API Token** with **Pages:Read** permissions.
-   * You can create one in your Cloudflare Profile under **API Tokens** -> **Create Token** -> scroll down to the bottom and click **Get started** under **Create Custom Token**. Define the permission: `Account` -> `Cloudflare Pages` -> `Read`.
-2. Your **Cloudflare Account ID** (found in your Cloudflare dashboard URL or on the Workers/Pages overview page).
+   * Create one in the Cloudflare Dashboard under **My Profile** -> **API Tokens** -> **Create Custom Token**.
+   * Set Permission: `Account` -> `Cloudflare Pages` -> `Read`.
+   * Set Resources: Include your target account.
+2. Your **Cloudflare Account ID** (found under the Pages section in your Cloudflare dashboard URL).
 
-### 2. Running the Standalone Executable
-We package the app into a single binary (`dist/cf-pages-notifier.exe`):
-1. Double-click the `cf-pages-notifier.exe` file or run it from the Command Prompt/PowerShell.
-2. If running for the first time, the **Setup Wizard** will launch:
-   * Paste your Cloudflare API Token.
-   * Paste your Account ID.
-   * Select the Pages projects you want to monitor (use **Spacebar** to check/uncheck projects, and press **Enter** to confirm).
-   * Confirm if you want sound alerts and desktop notifications enabled.
-3. The live monitor dashboard will start automatically!
-
----
-
-## CLI Flags & Commands
-
-If running from source (`npm start`) or via the executable, you can use these flags:
-
-* `--test`: Fires test notifications for Success, Failure, and Cancelled statuses immediately to check system audio volume and toast alerts.
-* `--config`: Rerun the interactive setup wizard to change API tokens, accounts, or the monitored projects list.
-
-**Examples (using Node):**
+### 2. Installation and Development
+To install dependencies and start the app in development:
 ```bash
-# Run the live monitor
+# Install dependencies
+npm install
+
+# Start the desktop application
 npm start
-
-# Run the setup wizard to change settings
-npm run configure
-
-# Test audio and desktop alerts
-npm run test-notify
 ```
 
-**Examples (using Executable):**
+### 3. Build Production Executable
+You can compile a standalone, portable `.exe` file that works on any Windows x64 computer without Node.js installed:
 ```bash
-# Run setup wizard
-.\cf-pages-notifier.exe --config
-
-# Run tests
-.\cf-pages-notifier.exe --test
+npm run dist
 ```
+The packaged executable will be generated under the `dist/` directory as `Cloudflare Pages Notifier.exe`.
 
 ---
 
-## Running 24/7 silently in the Background on Windows
+## App Interface & Settings
 
-To ensure you are always notified without keeping a terminal window open, use one of the following methods:
+### Navigation
+The left sidebar lets you switch between:
+1. **Dashboard**: Live view of watched projects, counts of active builds, failures, successes, and deployment click-through links.
+2. **Settings**: Configuration editor (token validation, project checker, alert toggles, sound tester, startup options, slider intervals).
+3. **Activity Logs**: Monospaced logging feed detailing background API check events, network states, and status transitions.
 
-### Option A: Run via PM2 (Recommended)
-PM2 is a robust Node.js process manager that runs scripts as silent background services.
-1. Install PM2 globally:
-   ```bash
-   npm install -g pm2
-   ```
-2. Start the notifier using Node:
-   ```bash
-   pm2 start index.js --name "cf-notifier"
-   ```
-3. To make PM2 start automatically when Windows boots:
-   * Install the Windows startup utility:
-     ```bash
-     npm install -g pm2-windows-startup
-     pm2-startup install
-     ```
-   * Save the current process list:
-     ```bash
-     pm2 save
-     ```
-
-### Option B: Run Hidden via VBScript (Zero-Dependency)
-You can launch the executable or script completely hidden (no console window) using a simple VBScript:
-
-1. Create a file named `run-hidden.vbs` in the same directory:
-   ```vbs
-   CreateObject("Wscript.Shell").Run "cf-pages-notifier.exe", 0, True
-   ```
-   *(If running from source, replace `"cf-pages-notifier.exe"` with `"node index.js"`).*
-2. Double-clicking `run-hidden.vbs` will launch the monitor silently.
-3. **To run on startup**: Press `Win + R`, type `shell:startup`, and press Enter. Move a shortcut of `run-hidden.vbs` into this folder. It will now run silently in the background every time your PC boots.
-4. **To stop the hidden process**: Open Windows Task Manager, find `Node.js JavaScript Runtime` (or `cf-pages-notifier`), and end the task.
+### Background and Startup
+- **Run on Boot**: When enabled, the application registers itself in the Windows Registry to load automatically on startup.
+- **Start Minimized**: Launches the app directly into the taskbar system tray without drawing the dashboard window.
+- **Close to Tray**: Clicking the `X` button will keep the background monitoring loop running in the tray. To fully close the application, right-click the tray icon and select **Exit App**.
 
 ---
 
-## Audio Customization
+## Sound Customization
+The sound effects are stored inside the `sounds/` directory:
+- `success.wav` - Played on a successful deploy.
+- `failure.wav` - Played on a failed build.
+- `cancelled.wav` - Played on a cancelled build.
+- `chime.wav`, `ding.wav`, `alert.wav` - Alternative system sounds.
 
-The sound files are located in the `sounds/` directory:
-* `success.wav` - Played on a successful deploy.
-* `failure.wav` - Played on a failed build (buzzer sound).
-* `cancelled.wav` - Played on a cancelled build.
-
-To customize the sounds, simply replace these files with your own custom `.wav` files (ensure they use the same filenames). If using the compiled `.exe` version, it extracts and plays sounds from `%TEMP%/cf-pages-notifier/sounds/`, so update them in the workspace before compiling.
+You can customize the alerts by replacing these files with your own custom `.wav` files (keeping the same filenames) prior to building the distribution executable.
 
 ---
 
-## Compilation / Building the `.exe`
-If you make changes to the source code and want to compile a new `.exe`:
+## Legacy Command Line Interface (CLI)
+If you prefer running the command-line utility:
 ```bash
-npm run build
+# Run CLI monitor
+npm run cli
+
+# Run CLI configuration wizard
+npm run cli:configure
+
+# Test CLI desktop notifications and audio alerts
+npm run cli:test-notify
 ```
-The binary will be generated under the `dist/` directory.
+All settings (API token, account, project choices, preferences) are shared between the GUI desktop app and CLI modes via the persistent `~/.cf-pages-notifier.json` file in your home folder.
+
+---
+
+## License
+MIT
