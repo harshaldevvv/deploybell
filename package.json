@@ -25,7 +25,7 @@
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "electron": "^31.0.1",
+    "electron": "^43.0.0",
     "electron-builder": "^26.15.3",
     "pkg": "^5.8.1"
   },
