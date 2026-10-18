@@ -1,97 +1,85 @@
-# Cloudflare Pages Build Notifier (Desktop Application)
+<div align="center">
 
-A premium, production-ready Windows desktop application and background service that monitors your Cloudflare Pages deployments dynamically via the official Cloudflare API. It triggers **native Windows desktop toast notifications** (which open deployment URLs on click) and **audio sound alerts** the instant a build status changes.
+<img src="assets/icon.png" width="112" height="112" alt="DeployBell" />
 
-The application features a modern dark-themed dashboard with glassmorphic styling, real-time activity feeds, and a system tray (toolbar) residency mode to run silently in the background 24/7.
+# DeployBell
 
----
+**Hear the moment your Cloudflare Pages build succeeds or fails.**
 
-## Key Features
+A small desktop app that lives in your system tray, watches your Cloudflare Pages
+deployments and rings with a native notification and a sound the instant a build
+changes state. Click the notification to open the deployment.
 
-* 🖥️ **Sleek Glassmorphic GUI Dashboard**: Real-time status cards (Success, Failed, Building, Cancelled) showing environment details, short deployment IDs, and relative time tracking.
-* ⚙️ **Comprehensive Settings Panel**:
-  * **Interactive Project Selection**: Fetch all available pages projects from your Cloudflare account automatically and select which ones to watch using checkboxes.
-  * **Volume & Alarm Prefs**: Toggles for sounds/toasts with an interactive sound dropdown selector and "Play Test" triggers.
-  * **System Startup Options**: Toggle starting the app automatically on computer boot.
-  * **Background Residency**: Toggles for starting minimized directly to the tray and hiding the window to the tray when clicking the close (`X`) button.
-  * **Adjustable Polling Cadence**: Slide between 5 seconds (aggressive) and 120 seconds (passive) intervals.
-* 📥 **Native System Tray Residency**: Right-click tray menu to open dashboard, trigger manual checks, toggle notification mutes, set startup status, and exit. Double-clicking the tray icon toggles the main window visibility.
-* 🔔 **Interactive Notifications**: Desktop toast alerts showing project, environment, and build IDs. Clicking the notification opens the deployment page in your default browser.
-* 📦 **Zero-Dependency Portable EXE**: Package the app into a single standalone portable `.exe` executable that runs without requiring Node.js or installer wizard setups.
-* 📟 **Legacy CLI Mode**: Keep CLI dashboard monitoring capabilities using `--cli` scripts.
+[![Release](https://img.shields.io/github/v/release/harshaldevvv/deploybell)](https://github.com/harshaldevvv/deploybell/releases/latest)
+[![Build](https://github.com/harshaldevvv/deploybell/actions/workflows/release.yml/badge.svg)](https://github.com/harshaldevvv/deploybell/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+</div>
 
 ---
 
-## Getting Started
+## Download
 
-### 1. Requirements
-To watch your builds, you need:
-1. A **Cloudflare API Token** with **Pages:Read** permissions.
-   * Create one in the Cloudflare Dashboard under **My Profile** -> **API Tokens** -> **Create Custom Token**.
-   * Set Permission: `Account` -> `Cloudflare Pages` -> `Read`.
-   * Set Resources: Include your target account.
-2. Your **Cloudflare Account ID** (found under the Pages section in your Cloudflare dashboard URL).
+Grab the file for your computer from the [**latest release**](https://github.com/harshaldevvv/deploybell/releases/latest):
 
-### 2. Installation and Development
-To install dependencies and start the app in development:
+| Platform | File |
+| --- | --- |
+| Windows (Intel / AMD) | `DeployBell-<version>-win-x64.exe` (installer) or `DeployBell-<version>-portable-x64.exe` (no install) |
+| Windows (ARM, e.g. Surface Pro X / Snapdragon) | `DeployBell-<version>-win-arm64.exe` or `DeployBell-<version>-portable-arm64.exe` |
+| macOS (Apple Silicon and Intel) | `DeployBell-<version>-mac-universal.dmg` |
+| Linux (x64 / ARM64) | `.AppImage` or `.deb` for your architecture |
+
+> The app is not code-signed yet. On **Windows**, SmartScreen may show "Windows protected your PC":
+> click **More info → Run anyway**. On **macOS**, right-click the app and choose **Open** the first time,
+> or run `xattr -cr /Applications/DeployBell.app`.
+
+## What you need
+
+1. A **Cloudflare API token** with **Pages: Read** permission.
+   In the Cloudflare dashboard: **My Profile → API Tokens → Create Custom Token**,
+   permission `Account → Cloudflare Pages → Read`, scoped to your account.
+2. Your **Cloudflare Account ID** (it is in the dashboard URL).
+
+Open DeployBell, paste both into **Settings**, tick the projects to watch, and you are done.
+
+## Features
+
+- **Dashboard:** live status cards (success, failed, building, cancelled) with environment, short deployment ID and relative time.
+- **Notifications you can click:** each one opens that deployment in your browser.
+- **Sounds:** a different sound for success, failure and cancel, a test button, or pick your own `.wav`.
+- **Lives in the tray:** start minimized, close to tray, start at login, mute from the tray menu.
+- **Polling you control:** from every 5 seconds to every 2 minutes.
+- **Activity log:** every API check and state change, for when something looks off.
+
+Your token is stored only on your computer (`~/.cf-pages-notifier.json`) and is sent only to the
+Cloudflare API. See [PRIVACY.md](PRIVACY.md).
+
+## Build from source
+
 ```bash
-# Install dependencies
+git clone https://github.com/harshaldevvv/deploybell.git
+cd deploybell
 npm install
-
-# Start the desktop application
-npm start
+npm start          # run the app
+npm run dist       # build installers for your OS into dist/
 ```
 
-### 3. Build Production Executable
-You can compile a standalone, portable `.exe` file that works on any Windows x64 computer without Node.js installed:
+Pushing a `v*` tag builds every platform on GitHub Actions and attaches the installers to a draft release.
+
+### Command line mode (Windows)
+
 ```bash
-npm run dist
+npm run cli              # watch from the terminal
+npm run cli:configure    # setup wizard
+npm run cli:test-notify  # test the notification and sound
 ```
-The packaged executable will be generated under the `dist/` directory as `Cloudflare Pages Notifier.exe`.
 
----
+The desktop app and the CLI share the same settings file.
 
-## App Interface & Settings
+## Contributing
 
-### Navigation
-The left sidebar lets you switch between:
-1. **Dashboard**: Live view of watched projects, counts of active builds, failures, successes, and deployment click-through links.
-2. **Settings**: Configuration editor (token validation, project checker, alert toggles, sound tester, startup options, slider intervals).
-3. **Activity Logs**: Monospaced logging feed detailing background API check events, network states, and status transitions.
-
-### Background and Startup
-- **Run on Boot**: When enabled, the application registers itself in the Windows Registry to load automatically on startup.
-- **Start Minimized**: Launches the app directly into the taskbar system tray without drawing the dashboard window.
-- **Close to Tray**: Clicking the `X` button will keep the background monitoring loop running in the tray. To fully close the application, right-click the tray icon and select **Exit App**.
-
----
-
-## Sound Customization
-The sound effects are stored inside the `sounds/` directory:
-- `success.wav` - Played on a successful deploy.
-- `failure.wav` - Played on a failed build.
-- `cancelled.wav` - Played on a cancelled build.
-- `chime.wav`, `ding.wav`, `alert.wav` - Alternative system sounds.
-
-You can customize the alerts by replacing these files with your own custom `.wav` files (keeping the same filenames) prior to building the distribution executable.
-
----
-
-## Legacy Command Line Interface (CLI)
-If you prefer running the command-line utility:
-```bash
-# Run CLI monitor
-npm run cli
-
-# Run CLI configuration wizard
-npm run cli:configure
-
-# Test CLI desktop notifications and audio alerts
-npm run cli:test-notify
-```
-All settings (API token, account, project choices, preferences) are shared between the GUI desktop app and CLI modes via the persistent `~/.cf-pages-notifier.json` file in your home folder.
-
----
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
-MIT
+
+[MIT](LICENSE). DeployBell is an independent project and is not affiliated with or endorsed by Cloudflare.

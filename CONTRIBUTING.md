@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in improving the Cloudflare Pages Deployment Notifier!
+Thanks for your interest in improving the DeployBell!
 
 ## Getting started
 

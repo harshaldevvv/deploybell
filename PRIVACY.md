@@ -2,7 +2,7 @@
 
 _Last updated: 2026-07-06_
 
-**Cloudflare Pages Deployment Notifier** is built to collect nothing. It has no
+**DeployBell** is built to collect nothing. It has no
 backend, makes no network requests of its own, and uses no API keys.
 
 ## What it does

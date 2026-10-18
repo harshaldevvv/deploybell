@@ -1,12 +1,12 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, shell, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 
 // Set Application User Model ID for Windows Toast Notifications
 if (process.platform === 'win32') {
-  app.setAppUserModelId('com.cloudflare.pages.notifier');
+  app.setAppUserModelId('dev.harshal.deploybell');
 }
 
 const CONFIG_PATH = path.join(os.homedir(), '.cf-pages-notifier.json');
@@ -97,18 +97,26 @@ function playSound(soundNameOrPath) {
     return;
   }
   
-  // Escape single quotes for PowerShell filepath
-  const escapedPath = soundPath.replace(/'/g, "''");
-  
-  // Asynchronous playback by spawning PowerShell SoundPlayer (running hidden with no profile to speed up)
-  const command = `powershell -NoProfile -NonInteractive -Command "(New-Object System.Media.SoundPlayer('${escapedPath}')).PlaySync()"`;
-  exec(command, { windowsHide: true }, (err) => {
-    if (err) {
-      console.error('Failed to play sound via PowerShell:', err);
-      // Fallback audible beep
-      process.stdout.write('\x07');
+  // Each OS has its own built-in WAV player. execFile passes the path as an
+  // argument, so no shell ever parses it.
+  const players = {
+    win32: [['powershell', ['-NoProfile', '-NonInteractive', '-Command',
+      `(New-Object System.Media.SoundPlayer('${soundPath.replace(/'/g, "''")}')).PlaySync()`]]],
+    darwin: [['afplay', [soundPath]]],
+    linux: [['paplay', [soundPath]], ['aplay', ['-q', soundPath]]]
+  }[process.platform] || [];
+
+  const tryPlayer = (i) => {
+    if (i >= players.length) {
+      process.stdout.write(''); // last resort: terminal bell
+      return;
     }
-  });
+    const [cmd, args] = players[i];
+    execFile(cmd, args, { windowsHide: true }, (err) => {
+      if (err) tryPlayer(i + 1);
+    });
+  };
+  tryPlayer(0);
 }
 
 function notifyDeployment(projectName, status, deployment) {
@@ -327,10 +335,12 @@ function createMainWindow() {
 }
 
 function createTray() {
-  const iconPath = getTrayIconPath();
-  tray = new Tray(iconPath);
+  let trayImage = nativeImage.createFromPath(getTrayIconPath());
+  // The macOS menu bar wants a ~16pt image; the 32px tray.png would be oversized
+  if (process.platform === 'darwin') trayImage = trayImage.resize({ width: 16, height: 16 });
+  tray = new Tray(trayImage);
   
-  tray.setToolTip('Cloudflare Pages Notifier');
+  tray.setToolTip('DeployBell');
   
   tray.on('double-click', () => {
     toggleWindow();
@@ -359,7 +369,7 @@ function updateTrayMenu() {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Cloudflare Pages Notifier',
+      label: 'DeployBell',
       enabled: false
     },
     { type: 'separator' },

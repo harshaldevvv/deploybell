@@ -78,7 +78,7 @@ function showWindowsNotification(title, message) {
     $SerializedXml = New-Object Windows.Data.Xml.Dom.XmlDocument
     $SerializedXml.LoadXml($RawXml.OuterXml)
     $Toast = [Windows.UI.Notifications.ToastNotification]::new($SerializedXml)
-    $Notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Cloudflare Pages Notifier')
+    $Notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('DeployBell')
     $Notifier.Show($Toast)
   `.trim();
 
@@ -323,7 +323,7 @@ async function checkProjects() {
 async function runWizard() {
   console.clear();
   console.log(chalk.bold.cyan('========================================'));
-  console.log(chalk.bold.cyan('  Cloudflare Pages Notifier Setup Wizard '));
+  console.log(chalk.bold.cyan('  DeployBell Setup Wizard '));
   console.log(chalk.bold.cyan('========================================\n'));
 
   console.log(chalk.bold.yellow('Step 1: How to get your Cloudflare API Token:'));
