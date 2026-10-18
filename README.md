@@ -76,10 +76,20 @@ npm run cli:test-notify  # test the notification and sound
 
 The desktop app and the CLI share the same settings file.
 
-## Contributing
+## Privacy
 
-Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+No telemetry, no accounts, no servers of our own. DeployBell talks only to the Cloudflare API with the read-only
+token you give it, and keeps its settings in a file in your home folder. Details in [PRIVACY.md](PRIVACY.md).
 
-## License
+## License and disclaimer
 
-[MIT](LICENSE). DeployBell is an independent project and is not affiliated with or endorsed by Cloudflare.
+DeployBell is free, open source software under the [MIT License](LICENSE). Contributions welcome: see
+[CONTRIBUTING.md](CONTRIBUTING.md). Third-party components and their licences are listed in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Report security issues privately as described in
+[SECURITY.md](SECURITY.md).
+
+DeployBell is provided as is, without warranty of any kind. It reads deployment status only and never changes
+anything in your Cloudflare account. Cloudflare and Cloudflare Pages are trademarks of Cloudflare, Inc.;
+DeployBell is independent and not affiliated with or endorsed by Cloudflare.
+
+Made by [harshal.dev](https://harshal.dev).

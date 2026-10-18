@@ -1,40 +1,24 @@
-# Privacy Policy
+# Privacy
 
-_Last updated: 2026-07-06_
+DeployBell has no accounts, no telemetry, no analytics and no server of its own.
 
-**DeployBell** is built to collect nothing. It has no
-backend, makes no network requests of its own, and uses no API keys.
+## What it sends, and where
 
-## What it does
-
-The extension runs a content script only on `https://dash.cloudflare.com/*`.
-There it reads the text already visible on the Cloudflare Pages dashboard to
-figure out whether a deployment is building, has succeeded, failed, or was
-cancelled. When a deployment finishes, it shows a desktop notification and
-plays a sound locally.
+- It talks to one place only: the official Cloudflare API at `api.cloudflare.com`, using the API token and account
+  ID you enter, to list your Pages projects and check their latest deployments.
+- Nothing else leaves your computer. Notifications and sounds are local.
 
 ## What it stores
 
-Only your own settings and a small amount of runtime state, kept in your
-browser's local extension storage (`chrome.storage.local`):
+- **Settings**, including your Cloudflare API token and account ID, are saved in a plain JSON file in your home
+  folder: `~/.cf-pages-notifier.json` (on Windows, `C:\Users\<you>\.cf-pages-notifier.json`). The desktop app and
+  the command line mode share it.
+- The activity log is kept in memory only and is cleared when the app quits.
 
-- Your preferences (poll interval, volume, which alerts and sounds are enabled)
-- The most recent observed deployment status, project name, and timing (used to
-  show the popup and to avoid firing duplicate notifications)
-
-None of this ever leaves your device.
-
-## What it does NOT do
-
-- No servers, no analytics, no telemetry, no tracking
-- No API tokens, no Cloudflare API calls, no external network requests
-- Does not read any site other than the Cloudflare dashboard
-- Does not collect browsing history or personal data
+Because the token is stored as plain text, give DeployBell a token with **Pages: Read** permission only, scoped to
+the one account. That token can read deployment status and nothing else.
 
 ## Removing your data
 
-Uninstalling the extension deletes all locally stored settings and state.
-
-## Contact
-
-Questions? Open an issue on the project's GitHub repository.
+Uninstall DeployBell, delete `~/.cf-pages-notifier.json`, and revoke the token in the Cloudflare dashboard under
+**My Profile > API Tokens**.
